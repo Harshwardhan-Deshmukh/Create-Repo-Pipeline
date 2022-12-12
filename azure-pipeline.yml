@@ -16,6 +16,9 @@ stages:
     jobs:
       - job: create_Repo
         steps:
+        - checkout: self
+          persistCredentials: true
+          
         - task: Bash@3
           inputs:
             targetType: 'inline'
