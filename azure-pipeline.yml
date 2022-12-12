@@ -21,12 +21,15 @@ stages:
             targetType: 'inline'
             script: |
               echo '${{ parameters.RepoName }} is created'        
+    
         - task: Bash@3
           inputs:
             targetType: 'inline'
             script: |
               #!/bin/bash
-              curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' 
-              
-
+              set -x
+              curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+              chmod +x ./jq
+              repoId=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "Demo3-Repo" } ' )
+              echo $repoId 
         
