@@ -5,44 +5,21 @@ pool:
 
 parameters:
 - name: RepoName
-  displayName: Repostiory Name
+  displayName: Repository Name
   type: string
   default: '{overall}'
 
 stages:
-  - stage: Authorize
+  - stage: GitHub_API
     jobs:
-      - job: Authorize
+      - job: create-Repo
         steps:
-          - checkout: self
-          - task: PowerShell@2
-            inputs:
-              targetType: 'inline'
-              script: |
-                $auth = "pooja.bansal@publicissapient.com:cvql26xab2icr5dwqh27oq4xld7c6bidlv5oxdz5hxhufhlloopq"
-                $bytes = [System.Text.Encoding]::ASCII.GetBytes($auth)
-                $token = [System.Convert]::ToBase64String($bytes) 
-                $headers = @{ Authorization = "Basic $token" }
-                $org = "asda-ecom"
-                $url = "https://dev.azure.com/$org/_apis/projects?api-version=6.0"
-                $projectCall = Invoke-WebRequest -Uri $url -Method GET -Headers $headers
-                $projects = $projectCall | ConvertFrom-Json | Select-Object -ExpandProperty value
-                $projectName = "Terraform-Repo" # the current Azure DevOps project 
-                $project = $projects | Where-Object { $_.name -eq $projectName }
-                echo $project
-                $projectID = $project.id
-                echo $projectID
-                $org = "asda-ecom" # my sandbox Azure DevOps organization
-                $url = "https://dev.azure.com/$org/_apis/git/repositories?api-version=6.0"
-                @("repotest1", "repotest2") | ForEach-Object {
-                    $name = $_
-                    $body = @"
-                {
-                    "name": "$name",
-                    "project": {
-                        "ID": "$projectID"
-                    }
-                }
-                "@
-                    Invoke-WebRequest -Uri $url -Method POST -Headers $headers -Body $body -ContentType "application/json"    
-                }
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              # Write your commands here
+              
+              echo 'Hello world'
+
+        
