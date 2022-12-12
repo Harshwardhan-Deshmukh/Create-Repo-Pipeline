@@ -18,8 +18,6 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-              # Write your commands here
-              
-              echo '$(RepoName) is created'
+              echo '${{ parameters.RepoName }} is created'
 
         
