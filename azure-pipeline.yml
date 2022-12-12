@@ -12,7 +12,7 @@ parameters:
 stages:
   - stage: GitHub_API
     jobs:
-      - job: create-Repo
+      - job: create_Repo
         steps:
         - task: Bash@3
           inputs:
@@ -20,6 +20,6 @@ stages:
             script: |
               # Write your commands here
               
-              echo 'Hello world'
+              echo '$(RepoName) is created'
 
         
