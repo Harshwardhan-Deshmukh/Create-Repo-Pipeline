@@ -24,10 +24,7 @@ stages:
             targetType: 'inline'
             script: |
               #!/bin/bash
-              set -x
-              curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-              chmod +x ./jq
-              content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer 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' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' ) 
-              echo $content
+              curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer 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' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' 
+              
 
         
