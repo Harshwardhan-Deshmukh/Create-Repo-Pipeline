@@ -21,6 +21,7 @@ stages:
             targetType: 'inline'
             script: |
               echo '${{ parameters.RepoName }} is created'        
+              echo $(my-name)
     
         - task: Bash@3
           inputs:
