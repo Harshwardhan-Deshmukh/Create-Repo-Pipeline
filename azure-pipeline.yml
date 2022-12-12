@@ -11,6 +11,8 @@ parameters:
 
 stages:
   - stage: GitHub_API
+    variables:
+      groups: access-tokens
     jobs:
       - job: create_Repo
         steps:
@@ -24,7 +26,7 @@ stages:
             targetType: 'inline'
             script: |
               #!/bin/bash
-              curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer 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' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' 
+              curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' 
               
 
         
