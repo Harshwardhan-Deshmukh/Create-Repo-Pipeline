@@ -7,7 +7,7 @@ parameters:
 - name: RepoName
   displayName: Repository Name
   type: string
-  default: '{overall}'
+  default: 'Test_Repo_$(Build.BuildId)'
 
 stages:
   - stage: GitHub_API
