@@ -12,7 +12,7 @@ parameters:
 stages:
   - stage: GitHub_API
     variables:
-      group: access-tokens
+     - group: access-tokens
     jobs:
       - job: create_Repo
         steps:
