@@ -52,24 +52,6 @@ stages:
               ls
               git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git
 
-        # - task: PythonScript@0
-        #   inputs:
-        #     scriptSource: 'inline'
-        #     script: |
-        #       from urllib.parse import urlparse
-        #       url = '$(clone_url_response)'
-        #       parse_object = urlparse(url)
-        #       domain=parse_object.netloc
-        #       path=parse_object.path
-        #       protocol=parse_object.scheme
-        #       api_token=$(api-token)
-        #       final_url=protocol+"://"+api_token+"@"+domain+path
-        #       print('##vso[task.setvariable variable=clone_link;isOutput=true]final_url')
-
-        # - task: Bash@3
-        #   inputs:
-        #     targetType: 'inline'
-        #     script: 'echo $(PythonScript.clone_link)'
 
 
         
