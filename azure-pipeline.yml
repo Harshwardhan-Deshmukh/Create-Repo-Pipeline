@@ -43,6 +43,8 @@ stages:
             script: |
               echo $(clone_url_response)
               git clone https://$(api-token)@github.com/Harshwardhan-Deshmukh/keycloak-test.git
+              git config --global user.email "harshwardhanet7007@gmail.com"
+              git config --global user.name "Harshwardhan Deshmukh"
               cd keycloak-test
               touch README.md
               git add .
