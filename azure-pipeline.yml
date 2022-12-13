@@ -55,7 +55,7 @@ stages:
             scriptSource: 'inline'
             script: |
               from urllib.parse import urlparse
-              url = '$(clone_url_response)''
+              url = '$(clone_url_response)'
               parse_object = urlparse(url)
               domain=parse_object.netloc
               path=parse_object.path
