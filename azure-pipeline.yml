@@ -46,7 +46,7 @@ stages:
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
               cd keycloak-test
-              touch README.md
+              ls > list.txt
               git add .
               git commit -m "Added Readme"
               git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/keycloak-test.git
