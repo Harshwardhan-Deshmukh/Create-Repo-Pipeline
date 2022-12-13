@@ -42,14 +42,26 @@ stages:
             targetType: 'inline'
             script: |
               echo $(clone_url_response)
-              git clone https://$(api-token)@github.com/Harshwardhan-Deshmukh/keycloak-test.git
+              git clone https://$(api-token)@github.com/Harshwardhan-Deshmukh/gs-spring-boot.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
-              cd keycloak-test
-              ls > list.txt
+              cd gs-spring-boot
               git add .
-              git commit -m "Added Readme"
-              git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/keycloak-test.git
+              git commit -m "Commit made from pipeline"
+              ls
+        - task: PythonScript@0
+          inputs:
+            scriptSource: 'inline'
+            script: |
+              from urllib.parse import urlparse
+              url = $(clone_url_response)
+              parse_object = urlparse(url)
+              domain=parse_object.netloc
+              path=parse_object.path
+              protocol=parse_object.scheme
+              final_url=protocol+"://"+$(api-token)+"@"+domain+path
+              print(final_url)
+
 
         
 
