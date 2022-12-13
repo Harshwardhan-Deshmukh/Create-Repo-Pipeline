@@ -41,7 +41,7 @@ stages:
           inputs:
             targetType: 'inline'
             script: |
-              git clone https://$(api-token)github.com/Harshwardhan-Deshmukh/keycloak-test.git
+              git clone https://$(api-token)@github.com/Harshwardhan-Deshmukh/keycloak-test.git
               ls
 
         
