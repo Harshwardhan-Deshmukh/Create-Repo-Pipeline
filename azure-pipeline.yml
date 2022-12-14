@@ -1,4 +1,8 @@
-trigger: none
+trigger: 
+  branches:
+    include:
+      - master
+
 pr: none
 pool:
   vmImage: ubuntu-latest
