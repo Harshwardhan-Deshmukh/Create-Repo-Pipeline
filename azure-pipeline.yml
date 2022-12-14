@@ -46,7 +46,7 @@ stages:
               git clone https://$(api-token)@github.com/HoussemDellai/WebAppWithDatabaseDemo.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
-              cd gs-spring-boot
+              cd WebAppWithDatabaseDemo
               git pull origin master
               git add .
               git commit -m "Commit made from pipeline"
