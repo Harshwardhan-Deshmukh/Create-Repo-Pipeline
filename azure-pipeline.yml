@@ -42,7 +42,7 @@ stages:
             targetType: 'inline'
             script: |
               echo $(clone_url_response)
-              git clone https://$(api-token)@github.com/Harshwardhan-Deshmukh/gs-spring-boot.git
+              git clone https://$(api-token)@github.com/HoussemDellai/WebAppWithDatabaseDemo.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
               cd gs-spring-boot
