@@ -43,10 +43,10 @@ stages:
             targetType: 'inline'
             script: |
               echo $(clone_url_response)
-              git clone https://github.com/Asda-eCom/tf-deploy-crm-data-migration.git
+              git clone https://$(asda-github)@github.com/Asda-eCom/tf-deploy-crm-data-migration.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
-              cd WebAppWithDatabaseDemo
+              cd tf-deploy-crm-data-migration
               git pull origin master
               git add .
               git commit -m "Commit made from pipeline"
