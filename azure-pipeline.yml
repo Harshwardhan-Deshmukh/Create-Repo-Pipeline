@@ -43,7 +43,7 @@ stages:
             targetType: 'inline'
             script: |
               echo $(clone_url_response)
-              git clone https://$(api-token)@github.com/HoussemDellai/WebAppWithDatabaseDemo.git
+              git clone https://github.com/Asda-eCom/tf-deploy-crm-data-migration.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
               cd WebAppWithDatabaseDemo
