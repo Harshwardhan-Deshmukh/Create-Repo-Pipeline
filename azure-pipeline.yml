@@ -97,7 +97,7 @@ stages:
               git commit -m "Initialized a Terraform Template Repository"
               ls
               git branch -a
-              # git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
+              git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
               git log -a
           
         
