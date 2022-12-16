@@ -82,6 +82,19 @@ stages:
                   fp.close()
               
               print(os.getcwd())
+        
+        - task: PythonScript@0
+          inputs:
+            scriptSource: 'inline'
+            script: |
+              import os
+              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+              environmentValue = "sit"
+              backendPath = workingDirectory + environmentValue
+              backendFile = 'backend.tf'
+              envVarsFile = 'environment.tfvars'
+              with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
+                  file_Object.write('environment = "'+ environmentValue +'"\n')
 
 
         - task: Bash@3
