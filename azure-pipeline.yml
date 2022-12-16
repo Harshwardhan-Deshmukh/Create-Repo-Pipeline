@@ -89,7 +89,7 @@ stages:
             scriptSource: 'inline'
             script: |
               import os, sys
-              name=sys.argv[1]
+              name="tf-test-repo-395395"
               myList = name.split("-")
               finalKeyword = ""
               for words in myList[1:]:
@@ -113,8 +113,7 @@ stages:
               
               # # Add key
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('key \t\t\t = "' + finalKeyword + '-dev"')
-            arguments: '${{ parameters.RepoName }}'
+                  file_Object.write('key \t\t\t = "'+finalKeyword +environmentValue +'-dev"')
 
         - task: Bash@3
           displayName: Pushing Changes to the repository
