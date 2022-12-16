@@ -1,5 +1,6 @@
 parameters:
-  - name: environment
+  - name: environmentparameters
+    type: string
   - name: repoName
   - name: enabled
 
@@ -12,7 +13,7 @@ steps:
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        environmentValue = str(${{ parameters.environment }})
+        environmentValue = ${{ parameters.environment }}
         backendPath = workingDirectory + environmentValue
         backendFile = 'backend.tf'
         os.mkdir(backendPath)
@@ -38,7 +39,7 @@ steps:
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        environmentValue = str(${{ parameters.environment }})
+        environmentValue = ${{ parameters.environment }}
         backendPath = workingDirectory + environmentValue
         envVarsFile = 'environment.tfvars'
         with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
@@ -56,7 +57,7 @@ steps:
         for words in myList[1:]:
             finalKeyword += words[0]
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        environmentValue = str(${{ parameters.environment }})
+        environmentValue = ${{ parameters.environment }}
         backendPath = workingDirectory + environmentValue
         backendFile = 'backend.tf'
 
