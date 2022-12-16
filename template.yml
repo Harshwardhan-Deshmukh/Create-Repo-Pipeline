@@ -56,6 +56,7 @@ steps:
         finalKeyword = ""
         for words in myList[1:]:
             finalKeyword += words[0]
+        print("finalKeyword "+finalKeyword)
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
         environmentValue = '${{ parameters.environment }}'
         backendPath = workingDirectory + environmentValue
