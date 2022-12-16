@@ -1,20 +1,22 @@
 parameters:
   - name: environment
   - name: repoName
+  - name: enabled
 
 steps:
   - task: PythonScript@0
+    enabled: ${{ parameters.enabled }}
     inputs:
-      scriptSource: 'inline'
+      scriptSource: "inline"
       script: |
         import os
         os.mkdir(os. getcwd()+"/Template-Repo/environments/")
-      
 
   - task: PythonScript@0
+    enabled: ${{ parameters.enabled }}
     displayName: Creating folders
     inputs:
-      scriptSource: 'inline'
+      scriptSource: "inline"
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
@@ -32,13 +34,14 @@ steps:
         else:
             fp = open(os.path.join(backendPath, envVarsFile), 'x')
             fp.close()
-        
+
         print(os.getcwd())
-  
+
   - task: PythonScript@0
+    enabled: ${{ parameters.enabled }}
     displayName: Add environment Vars file
     inputs:
-      scriptSource: 'inline'
+      scriptSource: "inline"
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
@@ -47,10 +50,11 @@ steps:
         envVarsFile = 'environment.tfvars'
         with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
             file_Object.write('environment \t\t = "'+ environmentValue +'"\n')
-    
+
   - task: PythonScript@0
+    enabled: ${{ parameters.enabled }}
     inputs:
-      scriptSource: 'inline'
+      scriptSource: "inline"
       script: |
         import os, sys
         name=str(sys.argv[1])
@@ -62,20 +66,20 @@ steps:
         environmentValue = ${{ parameters.environment }}
         backendPath = workingDirectory + environmentValue
         backendFile = 'backend.tf'
-        
+
         # Add resource group
         with open(os.path.join(backendPath, backendFile), "a") as file_Object:
             file_Object.write('resource_group_name \t = "psecom-terraform-'+environmentValue+'-rg-01"\n')
-        
+
         # Add storage account name
         with open(os.path.join(backendPath, backendFile), "a") as file_Object:
             file_Object.write('storage_account_name \t = "psecomtf'+environmentValue+'uksst01"\n')
-        
+
         # Add storage account name
         with open(os.path.join(backendPath, backendFile), "a") as file_Object:
             file_Object.write('container \t\t = "terraform"\n')
-        
+
         # # Add key
         with open(os.path.join(backendPath, backendFile), "a") as file_Object:
             file_Object.write('key \t\t\t = "'+finalKeyword + "-" +environmentValue +'-dev"')
-      arguments: '${{ parameters.repoName }}'
+      arguments: "${{ parameters.repoName }}"
