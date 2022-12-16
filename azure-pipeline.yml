@@ -28,6 +28,7 @@ stages:
               echo $(my-name)
 
         - task: PythonScript@0
+          displayName: Create Initials
           inputs:
             scriptSource: 'inline'
             script: |
@@ -39,6 +40,7 @@ stages:
               print('##vso[task.setvariable variable=shortendName;]'+finalKeyword)
     
         - task: Bash@3
+          displayName: Creating Empty Repository
           inputs:
             targetType: 'inline'
             script: |
@@ -50,25 +52,52 @@ stages:
               clone_url_response= echo $content | jq .clone_url
 
               
+        - task: PythonScript@0
+          displayName: Creating necessary folders - Part 1
+          condition: always()
+          inputs:
+            scriptSource: 'inline'
+            script: 'os.mkdir(os. getcwd()+"/Template-Repo/environments/")'
+        
+        - task: PythonScript@0
+          inputs:
+            scriptSource: 'inline'
+            script: |
+              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+              backendPath = workingDirectory + "sit"
+              backendFile = 'backend.tf'
+              os.mkdir(backendPath)
+              if os.path.exists(os.path.join(backendPath, backendFile)):
+                  print('file already exists')
+              else: 
+                  fp = open(os.path.join(backendPath, backendFile), 'x')
+                  fp.close()
+              envVarsFile = 'environment.tfvars'        
+              if os.path.exists(os.path.join(backendPath, envVarsFile)):
+                  print('file already exists')
+              else:
+                  fp = open(os.path.join(backendPath, envVarsFile), 'x')
+                  fp.close()
+              
+              print(os.getcwd())
+
+
         - task: Bash@3
+          displayName: Pushing Changes to the repository
           inputs:
             targetType: 'inline'
             script: |
-              echo $(clone_url_response)
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
               cd Template-Repo
               git init
               git add .
-              git commit -m "Commit made from pipeline"
+              git commit -m "Initialized a Terraform Template Repository"
               ls
               git branch -a
-              git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
+              # git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
+              git log -a
           
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              echo $(shortendName)
+        
               
  
