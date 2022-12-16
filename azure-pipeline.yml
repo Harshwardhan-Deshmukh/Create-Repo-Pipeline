@@ -10,6 +10,11 @@ parameters:
   type: string
   default: 'Test_Repo_$(Build.BuildId)'
 
+- name: DEV
+  displayName: DEV
+  type: boolean
+  default: false
+
 stages:
   - stage: GitHub_API
     variables:
