@@ -6,21 +6,14 @@ parameters:
 steps:
   - task: PythonScript@0
     enabled: ${{ parameters.enabled }}
-    inputs:
-      scriptSource: "inline"
-      script: |
-        import os
-        os.mkdir(os. getcwd()+"/Template-Repo/environments/")
-
-  - task: PythonScript@0
-    enabled: ${{ parameters.enabled }}
-    displayName: Creating folders
+    displayName: Creating files and folders
     inputs:
       scriptSource: "inline"
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        backendPath = workingDirectory + str(${{ parameters.environment }})
+        environmentValue = str(${{ parameters.environment }})
+        backendPath = workingDirectory + environmentValue
         backendFile = 'backend.tf'
         os.mkdir(backendPath)
         if os.path.exists(os.path.join(backendPath, backendFile)):
