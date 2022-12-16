@@ -89,7 +89,7 @@ stages:
             scriptSource: 'inline'
             script: |
               import os, sys
-              name=${{ parameters.RepoName }}
+              name="${{ parameters.RepoName }}"
               myList = name.split("-")
               finalKeyword = ""
               for words in myList[1:]:
