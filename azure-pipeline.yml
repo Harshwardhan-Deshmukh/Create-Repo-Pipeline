@@ -92,11 +92,36 @@ stages:
               workingDirectory = os. getcwd()+"/Template-Repo/environments/"
               environmentValue = "sit"
               backendPath = workingDirectory + environmentValue
-              backendFile = 'backend.tf'
               envVarsFile = 'environment.tfvars'
               with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
                   file_Object.write('environment = \t\t"'+ environmentValue +'"\n')
+          
+        - task: PythonScript@0
+          displayName: Add environment Vars file
+          inputs:
+            scriptSource: 'inline'
+            script: |
+              import os
+              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+              environmentValue = "sit"
+              backendPath = workingDirectory + environmentValue
+              backendFile = 'backend.tf'
+              
+              # Add resource group
+              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+                  file_Object.write('resource_group_name \t = "psecom-terraform-'+environmentValue+'-rg-01"\n')
 
+              # Add storage account name
+              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+                  file_Object.write('storage_account_name \t = "psecomtf'+environmentValue+'uksst01"\n')
+
+              # Add storage account name
+              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+                  file_Object.write('container \t\t\t\t = "terraform"\n')
+
+              # # Add key
+              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+                  file_Object.write('key \t\t\t\t\t = "' + finalKeyword + '-dev"')
 
         - task: Bash@3
           displayName: Pushing Changes to the repository
