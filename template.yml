@@ -43,7 +43,7 @@ steps:
         backendPath = workingDirectory + environmentValue
         envVarsFile = 'environment.tfvars'
         with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
-            file_Object.write('environment \t\t = "'+ environmentValue +'"\n')
+            file_Object.write('environment \t = "'+ environmentValue +'"\n')
 
   - task: PythonScript@0
     enabled: ${{ parameters.enabled }}
