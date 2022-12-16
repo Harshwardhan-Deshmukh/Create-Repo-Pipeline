@@ -129,7 +129,7 @@ stages:
             scriptSource: 'inline'
             script: |
               import os, sys
-              name="${{ parameters.RepoName }}"
+              name=str(sys.argv[1])
               myList = name.split("-")
               finalKeyword = ""
               for words in myList[1:]:
@@ -154,7 +154,7 @@ stages:
               # # Add key
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
                   file_Object.write('key \t\t\t = "'+finalKeyword + "-" +environmentValue +'-dev"')
-         
+            arguments: '${{ parameters.RepoName }}'
 
         - task: Bash@3
           displayName: Pushing Changes to the repository
