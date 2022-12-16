@@ -20,7 +20,7 @@ steps:
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        backendPath = workingDirectory + ${{ parameters.environment }}
+        backendPath = workingDirectory + str(${{ parameters.environment }})
         backendFile = 'backend.tf'
         os.mkdir(backendPath)
         if os.path.exists(os.path.join(backendPath, backendFile)):
@@ -45,7 +45,7 @@ steps:
       script: |
         import os
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        environmentValue = ${{ parameters.environment }}
+        environmentValue = str(${{ parameters.environment }})
         backendPath = workingDirectory + environmentValue
         envVarsFile = 'environment.tfvars'
         with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
@@ -63,7 +63,7 @@ steps:
         for words in myList[1:]:
             finalKeyword += words[0]
         workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-        environmentValue = ${{ parameters.environment }}
+        environmentValue = str(${{ parameters.environment }})
         backendPath = workingDirectory + environmentValue
         backendFile = 'backend.tf'
 

@@ -80,52 +80,60 @@ stages:
                 clone_url_response= echo $content | jq .clone_url
 
           - template: "./template.yml"
+            displayName: Produce Dev environment files
             parameters:
               environment: "dev"
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.dev }}
+            enabled: ${{ parameters.dev }}
 
           - template: "./template.yml"
+            displayName: Produce SIT environment files
             parameters:
               environment: "sit"
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.sit }}
+            enabled: ${{ parameters.sit }}
 
           - template: "./template.yml"
+            displayName: Produce QA environment files
             parameters:
               environment: "qa"
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.qa }}
+            enabled: ${{ parameters.qa }}
           
           - template: "./template.yml"
+            displayName: Produce TEST environment files
             parameters:
               environment: 'test'
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.test }}
+            enabled: ${{ parameters.test }}
           
           - template: "./template.yml"
+            displayName: Produce PERF environment files
             parameters:
               environment: 'perf'
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.perf }}
+            enabled: ${{ parameters.perf }}
           
           - template: "./template.yml"
+            displayName: Produce SITTMP environment files
             parameters:
               environment: 'sittmp'
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.sittmp }}
+            enabled: ${{ parameters.sittmp }}
           
           - template: "./template.yml"
+            displayName: Produce STAG environment files
             parameters:
               environment: 'stag'
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.stag }}
+            enabled: ${{ parameters.stag }}
           
           - template: "./template.yml"
+            displayName: Produce UAT environment files
             parameters:
               environment: 'uat'
               repoName: ${{ parameters.RepoName }}
-              enabled: ${{ parameters.uat }}
+            enabled: ${{ parameters.uat }}
 
           - task: Bash@3
             displayName: Pushing Changes to the repository
