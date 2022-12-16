@@ -10,8 +10,43 @@ parameters:
   type: string
   default: 'Test_Repo_$(Build.BuildId)'
 
-- name: DEV
+- name: dev
   displayName: DEV
+  type: boolean
+  default: false
+
+- name: sit
+  displayName: SIT
+  type: boolean
+  default: false
+
+- name: qa
+  displayName: QA
+  type: boolean
+  default: false
+
+- name: test
+  displayName: TEST
+  type: boolean
+  default: false
+
+- name: perf
+  displayName: PERF
+  type: boolean
+  default: false
+
+- name: sittmp
+  displayName: SITTMP
+  type: boolean
+  default: false
+
+- name: stag
+  displayName: STAG
+  type: boolean
+  default: false
+
+- name: uat
+  displayName: UAT
   type: boolean
   default: false
 
