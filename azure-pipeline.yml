@@ -62,7 +62,7 @@ stages:
               git add .
               git commit -m "Commit made from pipeline"
               ls
-              git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git 
+              git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git main
           
         - task: Bash@3
           inputs:
