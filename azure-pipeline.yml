@@ -26,6 +26,17 @@ stages:
             script: |
               echo '${{ parameters.RepoName }} is created'        
               echo $(my-name)
+
+        - task: PythonScript@0
+          inputs:
+            scriptSource: 'inline'
+            script: |
+              name="tf-deploy-crm-data-migration"
+              myList = name.split("-")
+              finalKeyword = ""
+              for words in myList[1:]:
+                  finalKeyword += words[0]
+              print('##vso[task.setvariable variable=shortendName;isOutput=true]finalKeyword')
     
         - task: Bash@3
           inputs:
@@ -37,6 +48,7 @@ stages:
               chmod +x ./jq
               content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
               clone_url_response= echo $content | jq .clone_url
+          enabled: false
               
         - task: Bash@3
           inputs:
@@ -52,3 +64,12 @@ stages:
               git commit -m "Commit made from pipeline"
               ls
               git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git 
+          enabled: false
+          
+        - task: Bash@3
+          inputs:
+            targetType: 'inline'
+            script: |
+              echo $(shortendName)
+              
+ 
