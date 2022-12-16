@@ -55,11 +55,10 @@ stages:
             targetType: 'inline'
             script: |
               echo $(clone_url_response)
-              git clone https://$(api-token)@github.com/HoussemDellai/WebAppWithDatabaseDemo.git
               git config --global user.email "$(Build.RequestedForEmail)"
               git config --global user.name "$(Build.QueuedBy)"
-              cd WebAppWithDatabaseDemo
-              git pull origin master
+              cd Template-Repo
+              git init
               git add .
               git commit -m "Commit made from pipeline"
               ls
