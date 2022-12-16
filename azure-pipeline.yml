@@ -76,7 +76,8 @@ stages:
                 curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
                 chmod +x ./jq
                 content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
-                clone_url_response= echo $content | jq .clone_url
+                echo $content | jq .clone_url
+
           - task: PythonScript@0
             displayName: Creating environments folder
             inputs:
@@ -148,5 +149,6 @@ stages:
                 git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
                 git log -a
                 echo "Clone url: $(clone_url_response)"
+                echo $content
           
 
