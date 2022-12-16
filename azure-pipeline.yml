@@ -36,8 +36,7 @@ stages:
               finalKeyword = ""
               for words in myList[1:]:
                   finalKeyword += words[0]
-              print('echo $(finalKeyword)')
-              print('##vso[task.setvariable variable=shortendName;]finalKeyword')
+              print('##vso[task.setvariable variable=shortendName;]'+finalKeyword)
     
         - task: Bash@3
           inputs:
