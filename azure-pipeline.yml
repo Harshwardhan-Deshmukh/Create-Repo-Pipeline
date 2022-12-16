@@ -48,7 +48,7 @@ stages:
               chmod +x ./jq
               content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
               clone_url_response= echo $content | jq .clone_url
-          enabled: false
+          enabled: true
               
         - task: Bash@3
           inputs:
@@ -63,7 +63,7 @@ stages:
               git commit -m "Commit made from pipeline"
               ls
               git push https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git 
-          enabled: false
+          enabled: true 
           
         - task: Bash@3
           inputs:
