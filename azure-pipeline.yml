@@ -109,11 +109,11 @@ stages:
               
               # Add storage account name
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('container \t\t\t\t = "terraform"\n')
+                  file_Object.write('container \t\t = "terraform"\n')
               
               # # Add key
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('key \t\t\t\t\t = "' + finalKeyword + '-dev"')
+                  file_Object.write('key \t\t\t = "' + finalKeyword + '-dev"')
             arguments: '${{ parameters.RepoName }}'
 
         - task: Bash@3
