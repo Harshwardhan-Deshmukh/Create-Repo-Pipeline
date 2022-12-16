@@ -1,0 +1,39 @@
+# Template to execute basic sonar scan and publish results
+
+parameters:
+- name: sonar_service_connection # name of the parameter; required
+  type: string 
+
+steps:
+# prepare custom projectKey to be used in sonar report
+- task: Bash@3
+  inputs:
+    targetType: 'inline'
+    script: |
+      repository=$(echo ${BUILD_REPOSITORY_NAME} | cut -d '/' -f 2)
+      customProjectKey="${repository}"
+      echo "---------------------------------"
+      echo "REPO: ${BUILD_REPOSITORY_NAME}"
+      echo "Fixed: ${repository}"
+      echo "---------------------------------"
+      echo "##vso[task.setvariable variable=customProjectKey;]$customProjectKey"
+  displayName: Create custom projectKey for sonar
+
+# Prepare Analysis Configuration task
+- task: SonarQubePrepare@5
+  inputs:
+    SonarQube: ${{ parameters.sonar_service_connection }}
+    scannerMode: 'CLI'
+    configMode: 'manual'
+    cliProjectKey: '$(customProjectKey)'
+    cliProjectName: '$(customProjectKey)'
+
+# Run Code Analysis task
+- task: SonarQubeAnalyze@5
+  displayName: Execute Sonar Analysis
+
+# Publish Quality Gate Result task
+- task: SonarQubePublish@5
+  inputs:
+    pollingTimeoutSec: '300'
+  displayName: Publish Sonar Results

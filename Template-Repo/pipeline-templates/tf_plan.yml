@@ -1,0 +1,150 @@
+# Template to execute terraform init, validate, plan and apply
+
+# variable enable_tf_state_locking(true/false) need to be defined before calling this template
+
+parameters:
+  dependsOn: []
+  poolName: ''
+  environment: 'Dev'
+  deploymentName:
+  tf_version: '1.3.5'
+  ghAppId:
+  installationId:
+  tf_env:
+  subscription_id:
+  tenant_id:
+  sp_client_id:
+  sp_client_secret:
+  workingDirectory: 'tf-deploy'
+  tfvarsPath:
+  backendPath:
+  storageAccountUri:
+  ghAppKey:
+  
+ 
+steps:
+- checkout: self
+
+- task: DownloadSecureFile@1
+  name: ghAppKey
+  displayName: 'Download GitHub App Private Key'
+  inputs: 
+    secureFile: ${{parameters.ghAppKey}}
+
+# Task to obtain a GitHub Installation Access Token using GitHub App private Key & JWT
+- bash: |
+    # Obtain a JWT using GitHub API with PEM as auth.
+    echo "Getting GitHub App JWT"
+    PEM=$( cat $(ghAppKey.secureFilePath) )
+    GITHUB_APP_ID=${{ parameters.ghAppId }} # Get the Github app id from the Organisation Settings.
+
+    NOW=$( date +%s )
+    IAT="${NOW}"
+
+    # JWT expiration time has 10 minute maximum. Expire 9 minutes in the future.
+    EXP=$((${NOW} + 540))
+
+    HEADER_RAW='{"alg":"RS256"}'
+    HEADER=$( echo -n "${HEADER_RAW}" | openssl base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
+    PAYLOAD_RAW='{"iat":'"${IAT}"',"exp":'"${EXP}"',"iss":'"${GITHUB_APP_ID}"'}'
+    PAYLOAD=$( echo -n "${PAYLOAD_RAW}" | openssl base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
+    HEADER_PAYLOAD="${HEADER}"."${PAYLOAD}"
+    SIGNATURE=$( openssl dgst -sha256 -sign <(echo -n "${PEM}") <(echo -n "${HEADER_PAYLOAD}") | openssl base64 | tr -d '=' | tr '/+' '_-' | tr -d '\n' )
+    JWT="${HEADER_PAYLOAD}"."${SIGNATURE}"
+
+    # Generate a new Installation Access Token using the JWT to authenticate to the API.
+    echo "Generating new Installation Access Token for GitHub Auth."
+    TOKEN=$(curl -X POST \
+      -H "Authorization: Bearer $JWT" \
+      -H "Accept: application/vnd.github+json" \
+      https://api.github.com/app/installations/${{ parameters.installationId }}/access_tokens | jq -r '.token')
+
+    # Change git config to replace a github uri with the required uri to use the new IAT.
+    git config --global url."https://x-access-token:$TOKEN@github.com".insteadOf "https://github.com" # consider being more specific on URI to just TF modules
+  displayName: 'Generate new Installation Access Token for GitHub'
+
+- task: ms-devlabs.custom-terraform-tasks.custom-terraform-installer-task.TerraformInstaller@0
+  displayName: 'Install Terraform ${{ parameters.tf_version }}'
+  inputs:
+    terraformVersion: ${{ parameters.tf_version}}
+
+- bash: |
+    terraform fmt
+    terraform init -backend=false
+  displayName: 'Terraform init test'
+  workingDirectory: tf-deploy
+
+- script: |
+    echo "##vso[task.setvariable variable=enable_tf_state_locking;]false"
+  name: OverrideTFStateLocking
+  displayName: Disable Terraform State locking for non main branches
+  condition: ne(variables['Build.SourceBranch'], 'refs/heads/main')
+
+- task: CmdLine@2
+  name: terraform_init 
+  displayName: 'Terraform initialisation'
+  env:
+    ARM_CLIENT_ID:       ${{ parameters.sp_client_id }}
+    ARM_CLIENT_SECRET:   ${{ parameters.sp_client_secret }}
+    ARM_SUBSCRIPTION_ID: ${{ parameters.subscription_id }}
+    ARM_TENANT_ID:       ${{ parameters.tenant_id }}
+  inputs: 
+    workingDirectory: ${{ parameters.workingDirectory }}
+    script: |
+      terraform init -var-file=${{ parameters.tfvarsPath }} -backend-config=${{ parameters.backendPath }}
+               
+
+- task: CmdLine@2
+  name: terraform_validate
+  displayName: Terraform validate
+  env:
+    ARM_CLIENT_ID:       ${{ parameters.sp_client_id }}
+    ARM_CLIENT_SECRET:   ${{ parameters.sp_client_secret }}
+    ARM_SUBSCRIPTION_ID: ${{ parameters.subscription_id }}
+    ARM_TENANT_ID:       ${{ parameters.tenant_id }}
+  inputs:
+    workingDirectory: ${{ parameters.workingDirectory }}
+    script: |
+      terraform validate
+
+- task: CmdLine@2
+  displayName: Terraform plan
+  env:
+    ARM_CLIENT_ID:       ${{ parameters.sp_client_id }}
+    ARM_CLIENT_SECRET:   ${{ parameters.sp_client_secret }}
+    ARM_SUBSCRIPTION_ID: ${{ parameters.subscription_id }}
+    ARM_TENANT_ID:       ${{ parameters.tenant_id }}
+  inputs:
+    Script: |
+      set -eux  # fail on error
+      terraform plan --var-file=${{ parameters.tfvarsPath }} -out='${{ parameters.deploymentName }}-${{ parameters.environment }}-${{Build.BuildNumber}}.tfplan' -lock=$(enable_tf_state_locking)
+    workingDirectory: ${{ parameters.workingDirectory }}
+
+- task: CmdLine@2
+  name: 'tfplan_copy'
+  displayName: 'Copy TFPLAN file to Blob container.'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # only run for main branch
+  env:
+    AZCOPY_SPA_CLIENT_SECRET: ${{ parameters.sp_client_secret }}
+  inputs: 
+    workingDirectory: ${{ parameters.workingDirectory }}
+    script: |
+      azcopy login --tenant-id ${{ parameters.workingDirectory }}
+      azcopy copy '${{ parameters.deploymentName }}-${{ parameters.environment }}-${{Build.BuildNumber}}.tfplan' ${{parameters.storageAccountUri}}${{ parameters.deploymentName }}-${{ parameters.environment }}-${{Build.BuildNumber}}.tfplan
+  
+
+# - task: CmdLine@2
+#   name: 'terraform_apply'
+#   displayName: Terraform apply
+#   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/main')) # only run for branch main if build is succeeding so far
+#   env:
+#     ARM_CLIENT_ID:       ${{ parameters.sp_client_id }}
+#     ARM_CLIENT_SECRET:   ${{ parameters.sp_client_secret }}
+#     ARM_SUBSCRIPTION_ID: ${{ parameters.subscription_id }}
+#     ARM_TENANT_ID:       ${{ parameters.tenant_id }}
+#   inputs:
+#     script: |
+#       set -eux  # fail on error
+#       terraform apply ${{ parameters.deploymentName }}-${{ parameters.environment }}-${{Build.BuildNumber}}.tfplan
+#     workingDirectory: ${{ parameters.workingDirectory }}
+

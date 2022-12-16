@@ -1,0 +1,77 @@
+# ASDA eCom Terraform deployment pipeline
+# 
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+# Only trigger execution on specific branches
+trigger:
+  batch: "true"
+  branches:
+    include:
+      - main
+      - feat/*
+      - feature/*
+      - bugfix/*
+
+# avoid pull requests to trigger the pipeline
+#pr: none
+
+# see https://docs.microsoft.com/en-us/azure/devops/pipelines/process/variables?view=azure-devops&tabs=yaml%2Cbatch
+variables:
+  - group: "temp_secure"
+  - name: tf_version
+    value: "1.3.5"
+  - name: tf_service_connection
+    value: sub-venpub-psecom-devv-01-scn
+  - name: tf_service_connection_test
+    value: sub-venpub-psecom-devv-01-scn
+  # temporary workaround as the test principal has no permissions for vnet creation
+  # ticket raised to have that change and properly seperate the connections again
+  #tf_service_connection_test : 'sub-venpub-psecom-test-01-scn'
+  - name: tf_service_connection_stag
+    value: sub-venpub-psecom-stag-01-scn
+  - name: sonar_service_connection
+    value: psecom-platform-devv-sonar
+  - name: enable_tf_state_locking
+    value: true
+
+pool:
+  vmImage: ubuntu-latest
+
+# avoid the pipeline to run twice
+lockBehavior: sequential
+
+stages:
+- stage: Sonar
+  jobs:
+  - job: Sonar
+    strategy:
+      maxParallel: 1
+    steps:
+    - template: 'pipeline-templates/sonar-default.yml'
+      parameters:
+        sonar_service_connection: $(sonar_service_connection)
+
+- stage: Terraform_to_Dev
+  dependsOn:
+  - Sonar
+  jobs:
+  - deployment: Terraform
+    displayName: Terraform Dev
+    environment: Test
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - template: 'pipeline-templates/terraform.yml'
+            parameters:
+              tf_version: '$(tf_version)'
+              tf_service_connection: '$(tf_service_connection)'
+              tf_env: 'test'
+              tf_subscription_id: '$(tf_subscription_id_test)'
+              appId: "269846"
+              installationId: "31948806"
+
+
+#eof
+
