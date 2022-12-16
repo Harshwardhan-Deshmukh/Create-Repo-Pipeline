@@ -26,18 +26,6 @@ stages:
             script: |
               echo '${{ parameters.RepoName }} is created'        
               echo $(my-name)
-
-        - task: PythonScript@0
-          displayName: Create Initials
-          inputs:
-            scriptSource: 'inline'
-            script: |
-              name="tf-deploy-crm-data-migration"
-              myList = name.split("-")
-              finalKeyword = ""
-              for words in myList[1:]:
-                  finalKeyword += words[0]
-              print('##vso[task.setvariable variable=shortendName;]'+finalKeyword)
     
         - task: Bash@3
           displayName: Creating Empty Repository
@@ -97,11 +85,15 @@ stages:
                   file_Object.write('environment = \t\t"'+ environmentValue +'"\n')
           
         - task: PythonScript@0
-          displayName: Add environment Vars file
           inputs:
             scriptSource: 'inline'
             script: |
               import os
+              name=sys.argv[1]
+              myList = name.split("-")
+              finalKeyword = ""
+              for words in myList[1:]:
+                  finalKeyword += words[0]
               workingDirectory = os. getcwd()+"/Template-Repo/environments/"
               environmentValue = "sit"
               backendPath = workingDirectory + environmentValue
@@ -110,18 +102,19 @@ stages:
               # Add resource group
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
                   file_Object.write('resource_group_name \t = "psecom-terraform-'+environmentValue+'-rg-01"\n')
-
+              
               # Add storage account name
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
                   file_Object.write('storage_account_name \t = "psecomtf'+environmentValue+'uksst01"\n')
-
+              
               # Add storage account name
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
                   file_Object.write('container \t\t\t\t = "terraform"\n')
-
+              
               # # Add key
               with open(os.path.join(backendPath, backendFile), "a") as file_Object:
                   file_Object.write('key \t\t\t\t\t = "' + finalKeyword + '-dev"')
+            arguments: '${{ parameters.RepoName }}'
 
         - task: Bash@3
           displayName: Pushing Changes to the repository
