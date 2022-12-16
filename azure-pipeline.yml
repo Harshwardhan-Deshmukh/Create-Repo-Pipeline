@@ -66,7 +66,6 @@ stages:
               script: |
                 echo '${{ parameters.RepoName }} is created'        
                 echo $(my-name)
-
           - task: Bash@3
             displayName: Creating Empty Repository
             inputs:
@@ -78,7 +77,6 @@ stages:
                 chmod +x ./jq
                 content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
                 clone_url_response= echo $content | jq .clone_url
-
           - task: PythonScript@0
             displayName: Creating environments folder
             inputs:
@@ -86,52 +84,51 @@ stages:
               script: |
                 import os
                 os.mkdir(os. getcwd()+"/Template-Repo/environments/")
-
           - template: "./template.yml"
             parameters:
-              environment: "dev"
+              environment: dev
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.dev }}
 
           - template: "./template.yml"
             parameters:
-              environment: "sit"
+              environment: sit
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.sit }}
 
           - template: "./template.yml"
             parameters:
-              environment: "qa"
+              environment: qa
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.qa }}
 
           - template: "./template.yml"
             parameters:
-              environment: "test"
+              environment: test
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.test }}
 
           - template: "./template.yml"
             parameters:
-              environment: "perf"
+              environment: perf
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.perf }}
 
           - template: "./template.yml"
             parameters:
-              environment: "sittmp"
+              environment: sittmp
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.sittmp }}
 
           - template: "./template.yml"
             parameters:
-              environment: "stag"
+              environment: stag
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.stag }}
 
           - template: "./template.yml"
             parameters:
-              environment: "uat"
+              environment: uat
               repoName: ${{ parameters.RepoName }}
               enabled: ${{ parameters.uat }}
 
@@ -150,3 +147,4 @@ stages:
                 git branch -a
                 git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
                 git log -a
+
