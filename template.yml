@@ -1,5 +1,5 @@
 parameters:
-  - name: environmentparameters
+  - name: environment
     type: string
   - name: repoName
   - name: enabled
