@@ -53,16 +53,18 @@ stages:
 
               
         - task: PythonScript@0
-          displayName: Creating necessary folders - Part 1
-          condition: always()
           inputs:
             scriptSource: 'inline'
-            script: 'os.mkdir(os. getcwd()+"/Template-Repo/environments/")'
-        
+            script: |
+              import os
+              os.mkdir(os. getcwd()+"/Template-Repo/environments/")
+            
+
         - task: PythonScript@0
           inputs:
             scriptSource: 'inline'
             script: |
+              import os
               workingDirectory = os. getcwd()+"/Template-Repo/environments/"
               backendPath = workingDirectory + "sit"
               backendFile = 'backend.tf'
