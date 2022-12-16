@@ -84,6 +84,7 @@ stages:
               print(os.getcwd())
         
         - task: PythonScript@0
+          displayName: Add environment Vars file
           inputs:
             scriptSource: 'inline'
             script: |
