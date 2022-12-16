@@ -5,173 +5,148 @@ pool:
   vmImage: ubuntu-latest
 
 parameters:
-- name: RepoName
-  displayName: Repository Name
-  type: string
-  default: 'Test_Repo_$(Build.BuildId)'
+  - name: RepoName
+    displayName: Repository Name
+    type: string
+    default: "Test_Repo_$(Build.BuildId)"
 
-- name: dev
-  displayName: DEV
-  type: boolean
-  default: false
+  - name: dev
+    displayName: DEV
+    type: boolean
+    default: false
 
-- name: sit
-  displayName: SIT
-  type: boolean
-  default: false
+  - name: sit
+    displayName: SIT
+    type: boolean
+    default: false
 
-- name: qa
-  displayName: QA
-  type: boolean
-  default: false
+  - name: qa
+    displayName: QA
+    type: boolean
+    default: false
 
-- name: test
-  displayName: TEST
-  type: boolean
-  default: false
+  - name: test
+    displayName: TEST
+    type: boolean
+    default: false
 
-- name: perf
-  displayName: PERF
-  type: boolean
-  default: false
+  - name: perf
+    displayName: PERF
+    type: boolean
+    default: false
 
-- name: sittmp
-  displayName: SITTMP
-  type: boolean
-  default: false
+  - name: sittmp
+    displayName: SITTMP
+    type: boolean
+    default: false
 
-- name: stag
-  displayName: STAG
-  type: boolean
-  default: false
+  - name: stag
+    displayName: STAG
+    type: boolean
+    default: false
 
-- name: uat
-  displayName: UAT
-  type: boolean
-  default: false
+  - name: uat
+    displayName: UAT
+    type: boolean
+    default: false
 
 stages:
   - stage: GitHub_API
     variables:
-     - group: access-tokens
+      - group: access-tokens
     jobs:
       - job: create_Repo
         steps:
-        - checkout: self
-          persistCredentials: true
-          
-        - task: Bash@3
-          inputs:
-            targetType: 'inline'
-            script: |
-              echo '${{ parameters.RepoName }} is created'        
-              echo $(my-name)
-    
-        - task: Bash@3
-          displayName: Creating Empty Repository
-          inputs:
-            targetType: 'inline'
-            script: |
-              #!/bin/bash
-              set -x
-              curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-              chmod +x ./jq
-              content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
-              clone_url_response= echo $content | jq .clone_url
+          - checkout: self
+            persistCredentials: true
 
-              
-        - task: PythonScript@0
-          inputs:
-            scriptSource: 'inline'
-            script: |
-              import os
-              os.mkdir(os. getcwd()+"/Template-Repo/environments/")
-            
+          - task: Bash@3
+            inputs:
+              targetType: "inline"
+              script: |
+                echo '${{ parameters.RepoName }} is created'        
+                echo $(my-name)
 
-        - task: PythonScript@0
-          inputs:
-            scriptSource: 'inline'
-            script: |
-              import os
-              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-              backendPath = workingDirectory + "sit"
-              backendFile = 'backend.tf'
-              os.mkdir(backendPath)
-              if os.path.exists(os.path.join(backendPath, backendFile)):
-                  print('file already exists')
-              else: 
-                  fp = open(os.path.join(backendPath, backendFile), 'x')
-                  fp.close()
-              envVarsFile = 'environment.tfvars'        
-              if os.path.exists(os.path.join(backendPath, envVarsFile)):
-                  print('file already exists')
-              else:
-                  fp = open(os.path.join(backendPath, envVarsFile), 'x')
-                  fp.close()
-              
-              print(os.getcwd())
-        
-        - task: PythonScript@0
-          displayName: Add environment Vars file
-          inputs:
-            scriptSource: 'inline'
-            script: |
-              import os
-              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-              environmentValue = "sit"
-              backendPath = workingDirectory + environmentValue
-              envVarsFile = 'environment.tfvars'
-              with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
-                  file_Object.write('environment \t\t = "'+ environmentValue +'"\n')
-          
-        - task: PythonScript@0
-          inputs:
-            scriptSource: 'inline'
-            script: |
-              import os, sys
-              name=str(sys.argv[1])
-              myList = name.split("-")
-              finalKeyword = ""
-              for words in myList[1:]:
-                  finalKeyword += words[0]
-              workingDirectory = os. getcwd()+"/Template-Repo/environments/"
-              environmentValue = "sit"
-              backendPath = workingDirectory + environmentValue
-              backendFile = 'backend.tf'
-              
-              # Add resource group
-              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('resource_group_name \t = "psecom-terraform-'+environmentValue+'-rg-01"\n')
-              
-              # Add storage account name
-              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('storage_account_name \t = "psecomtf'+environmentValue+'uksst01"\n')
-              
-              # Add storage account name
-              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('container \t\t = "terraform"\n')
-              
-              # # Add key
-              with open(os.path.join(backendPath, backendFile), "a") as file_Object:
-                  file_Object.write('key \t\t\t = "'+finalKeyword + "-" +environmentValue +'-dev"')
-            arguments: '${{ parameters.RepoName }}'
+          - task: Bash@3
+            displayName: Creating Empty Repository
+            inputs:
+              targetType: "inline"
+              script: |
+                #!/bin/bash
+                set -x
+                curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+                chmod +x ./jq
+                content=$( curl --location --request POST 'https://api.github.com/user/repos' --header 'Authorization: Bearer $(api-token)' --header 'Content-Type: application/json' --data-raw '{ "name": "${{ parameters.RepoName }}" } ' )
+                clone_url_response= echo $content | jq .clone_url
 
-        - task: Bash@3
-          displayName: Pushing Changes to the repository
-          inputs:
-            targetType: 'inline'
-            script: |
-              git config --global user.email "$(Build.RequestedForEmail)"
-              git config --global user.name "$(Build.QueuedBy)"
-              cd Template-Repo
-              git init
-              git add .
-              git commit -m "Initialized a Terraform Template Repository"
-              ls
-              git branch -a
-              git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
-              git log -a
+          - template: "./template.yml"
+            displayName: Produce Dev environment files
+            parameters:
+              environment: "dev"
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.dev }}
+
+          - template: "./template.yml"
+            displayName: Produce SIT environment files
+            parameters:
+              environment: "sit"
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.sit }}
+
+          - template: "./template.yml"
+            displayName: Produce QA environment files
+            parameters:
+              environment: "qa"
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.qa }}
           
-        
-              
- 
+          - template: "./template.yml"
+            displayName: Produce TEST environment files
+            parameters:
+              environment: 'test'
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.test }}
+          
+          - template: "./template.yml"
+            displayName: Produce PERF environment files
+            parameters:
+              environment: 'perf'
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.perf }}
+          
+          - template: "./template.yml"
+            displayName: Produce SITTMP environment files
+            parameters:
+              environment: 'sittmp'
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.sittmp }}
+          
+          - template: "./template.yml"
+            displayName: Produce STAG environment files
+            parameters:
+              environment: 'stag'
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.stag }}
+          
+          - template: "./template.yml"
+            displayName: Produce UAT environment files
+            parameters:
+              environment: 'uat'
+              repoName: ${{ parameters.RepoName }}
+            enabled: ${{ parameters.uat }}
+
+          - task: Bash@3
+            displayName: Pushing Changes to the repository
+            inputs:
+              targetType: "inline"
+              script: |
+                git config --global user.email "$(Build.RequestedForEmail)"
+                git config --global user.name "$(Build.QueuedBy)"
+                cd Template-Repo
+                git init
+                git add .
+                git commit -m "Initialized a Terraform Template Repository"
+                ls
+                git branch -a
+                git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
+                git log -a

@@ -1,0 +1,81 @@
+parameters:
+  - name: environment
+  - name: repoName
+
+steps:
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import os
+        os.mkdir(os. getcwd()+"/Template-Repo/environments/")
+      
+
+  - task: PythonScript@0
+    displayName: Creating folders
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import os
+        workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+        backendPath = workingDirectory + ${{ parameters.environment }}
+        backendFile = 'backend.tf'
+        os.mkdir(backendPath)
+        if os.path.exists(os.path.join(backendPath, backendFile)):
+            print('file already exists')
+        else: 
+            fp = open(os.path.join(backendPath, backendFile), 'x')
+            fp.close()
+        envVarsFile = 'environment.tfvars'        
+        if os.path.exists(os.path.join(backendPath, envVarsFile)):
+            print('file already exists')
+        else:
+            fp = open(os.path.join(backendPath, envVarsFile), 'x')
+            fp.close()
+        
+        print(os.getcwd())
+  
+  - task: PythonScript@0
+    displayName: Add environment Vars file
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import os
+        workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+        environmentValue = ${{ parameters.environment }}
+        backendPath = workingDirectory + environmentValue
+        envVarsFile = 'environment.tfvars'
+        with open(os.path.join(backendPath, envVarsFile), "a") as file_Object:
+            file_Object.write('environment \t\t = "'+ environmentValue +'"\n')
+    
+  - task: PythonScript@0
+    inputs:
+      scriptSource: 'inline'
+      script: |
+        import os, sys
+        name=str(sys.argv[1])
+        myList = name.split("-")
+        finalKeyword = ""
+        for words in myList[1:]:
+            finalKeyword += words[0]
+        workingDirectory = os. getcwd()+"/Template-Repo/environments/"
+        environmentValue = ${{ parameters.environment }}
+        backendPath = workingDirectory + environmentValue
+        backendFile = 'backend.tf'
+        
+        # Add resource group
+        with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+            file_Object.write('resource_group_name \t = "psecom-terraform-'+environmentValue+'-rg-01"\n')
+        
+        # Add storage account name
+        with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+            file_Object.write('storage_account_name \t = "psecomtf'+environmentValue+'uksst01"\n')
+        
+        # Add storage account name
+        with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+            file_Object.write('container \t\t = "terraform"\n')
+        
+        # # Add key
+        with open(os.path.join(backendPath, backendFile), "a") as file_Object:
+            file_Object.write('key \t\t\t = "'+finalKeyword + "-" +environmentValue +'-dev"')
+      arguments: '${{ parameters.repoName }}'
