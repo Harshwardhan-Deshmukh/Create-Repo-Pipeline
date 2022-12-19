@@ -149,6 +149,5 @@ stages:
                 git push --set-upstream https://$(api-token)@github.com/Harshwardhan-Deshmukh/${{ parameters.RepoName }}.git master
                 git log -a
                 echo "Clone url: $(clone_url_response)"
-                
-          
 
+# Teams API step skipped as this is not a Organization repository
