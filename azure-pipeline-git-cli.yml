@@ -22,13 +22,12 @@ stages:
               script: |
                #!/bin/bash
                gh auth login
-               gh api -H "Accept: application/vnd.github+json" /users/Harshwardhan-Deshmukh/repos
 
           - task: Bash@3
             inputs:
               targetType: 'inline'
               script: |
-                gh api -H "Accept: application/vnd.github+json" /repositories
+                gh api -H "Accept: application/vnd.github+json" /repos/Harshwardhan-Deshmukh/Create-Repo-Pipeline
               #  set -x
               #  curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
               #  chmod +x ./jq
