@@ -28,17 +28,18 @@ stages:
             inputs:
               targetType: 'inline'
               script: |
-                gh repo create anonymous-repo --private
-                git config --global user.email "harshwardhanet7007@gmail.com"
-                git config --global user.name "Harshwardhan"
-                git config --global init.defaultBranch main
-                # gh repo clone https://github.com/Harshwardhan-Deshmukh/my-project
-                cd Template-Repo
-                git init
-                git remote add origin https://github.com/Harshwardhan-Deshmukh/my-project.git
-                git add .
-                git commit -m "Initialized a Terraform Template Repository"
-                git push -u origin main
+                # gh repo create anonymous-repo --private
+                # git config --global user.email "harshwardhanet7007@gmail.com"
+                # git config --global user.name "Harshwardhan"
+                # git config --global init.defaultBranch main
+                # # gh repo clone https://github.com/Harshwardhan-Deshmukh/my-project
+                # cd Template-Repo
+                # git init
+                # git remote add origin https://github.com/Harshwardhan-Deshmukh/my-project.git
+                # git add .
+                # git commit -m "Initialized a Terraform Template Repository"
+                # git push -u origin main
+                gh api -H "Accept: application/vnd.github+json" /users/Harshwardhan-Deshmukh/repos
               #  set -x
               #  curl -L -s -o ./jq https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
               #  chmod +x ./jq
