@@ -22,7 +22,7 @@ stages:
               script: |
                #!/bin/bash
                gh auth login
-               gh api -H "Accept: application/vnd.github+json" /users/yvnsraviteja1729/repos
+               gh api -H "Accept: application/vnd.github+json" /users/Harshwardhan-Deshmukh/repos
 
           - task: Bash@3
             inputs:
